@@ -1,1 +1,0 @@
-const t=new IntersectionObserver(e=>{for(const r of e)r.isIntersecting&&(r.target.classList.add("visible"),t.unobserve(r.target))},{threshold:.12});document.querySelectorAll(".reveal").forEach(e=>t.observe(e));

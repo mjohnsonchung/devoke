@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 import { verifyJwt, createServiceClient } from '../../lib/supabase';
 import { TIER_LIMITS, currentPeriod } from '../../lib/tiers';

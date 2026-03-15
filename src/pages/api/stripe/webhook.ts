@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 import { createServiceClient } from '../../../lib/supabase';
 import { getStripe } from '../../../lib/stripe';

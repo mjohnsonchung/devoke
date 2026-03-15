@@ -1,0 +1,188 @@
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  --color-bg:        #0f1c12;
+  --color-surface:   #162019;
+  --color-surface-2: #1c2b1f;
+  --color-green:     #7ab88a;
+  --color-green-dim: #4d7a5a;
+  --color-text:      #b8d4be;
+  --color-muted:     #8aa090;
+  --color-red:       #c4756a;
+  --color-red-dim:   #7a3d35;
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-ui:      'DM Sans', system-ui, sans-serif;
+
+  --radius:  6px;
+  --radius-lg: 12px;
+
+  /* Section diagonal clip (bottom edge) */
+  --clip-down:  polygon(0 0, 100% 0, 100% 92%, 0 100%);
+  --clip-up:    polygon(0 8%, 100% 0, 100% 100%, 0 100%);
+  --clip-full:  polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-green);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Typography Scale ───────────────────────────────────────────────────────── */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+h1 { font-size: clamp(3.5rem, 10vw, 7.5rem); }
+h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
+h3 { font-size: clamp(1.4rem, 3vw, 2rem); }
+
+p {
+  max-width: 62ch;
+  color: var(--color-muted);
+}
+
+/* ─── Grain Overlay ──────────────────────────────────────────────────────────── */
+/* Applied as a pseudo-element on sections that need it. */
+
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+.grain > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── Layout Utilities ───────────────────────────────────────────────────────── */
+
+.container {
+  width: min(1200px, 90vw);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(5rem, 12vw, 9rem);
+  position: relative;
+}
+
+/* ─── Scroll Reveal ──────────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.reveal.visible {
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal:nth-child(2) { animation-delay: 0.08s; }
+.reveal:nth-child(3) { animation-delay: 0.16s; }
+.reveal:nth-child(4) { animation-delay: 0.24s; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  border: none;
+  text-decoration: none;
+}
+
+.btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-green);
+  color: var(--color-bg);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-green);
+  border: 1px solid var(--color-green-dim);
+}
+
+/* ─── Section Label ──────────────────────────────────────────────────────────── */
+
+.section-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-green);
+  margin-bottom: 1.2rem;
+  display: block;
+}
+
+/* ─── Scroll Reveal Script (global, applied once) ────────────────────────────── */

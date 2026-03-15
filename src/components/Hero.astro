@@ -1,0 +1,153 @@
+---
+// Hero — full-bleed dark section with large editorial headline
+// Ambient ◎ sits behind the text at low opacity. Grain overlay on top.
+---
+
+<section class="hero grain" id="hero" aria-label="Hero">
+  <!-- Ambient ◎ — decorative, not interactive -->
+  <div class="hero__mark" aria-hidden="true">◎</div>
+
+  <div class="container hero__inner">
+    <div class="hero__eyebrow reveal">
+      <span class="hero__badge">Chrome Extension</span>
+      <span class="hero__platforms">X · Reddit · News · Google</span>
+    </div>
+
+    <h1 class="hero__headline reveal">
+      The internet,<br />
+      <em>translated.</em>
+    </h1>
+
+    <p class="hero__sub reveal">
+      Devoke rewrites sensationalist headlines and rage-bait posts into clear,
+      factual language — on every page you visit, in real time.
+      The original is always one tap away.
+    </p>
+
+    <div class="hero__actions reveal">
+      <a
+        href="https://chrome.google.com/webstore"
+        class="btn btn-primary"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Install Devoke from the Chrome Web Store"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        </svg>
+        Install for Chrome — it's free
+      </a>
+      <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
+    </div>
+  </div>
+
+  <!-- Diagonal bottom edge -->
+  <div class="hero__clip" aria-hidden="true"></div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    background-color: var(--color-bg);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-block: clamp(6rem, 14vw, 11rem);
+  }
+
+  /* Ambient ◎ — sits behind everything */
+  .hero__mark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    font-family: var(--font-display);
+    font-size: clamp(28rem, 60vw, 60rem);
+    line-height: 1;
+    color: var(--color-green);
+    opacity: 0.045;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero__badge {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-bg);
+    background: var(--color-green);
+    padding: 0.25rem 0.65rem;
+    border-radius: 2px;
+  }
+
+  .hero__platforms {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+
+  .hero__headline {
+    color: var(--color-text);
+    max-width: 14ch;
+  }
+
+  .hero__headline em {
+    font-style: italic;
+    color: var(--color-green);
+  }
+
+  .hero__sub {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.75;
+    max-width: 52ch;
+    color: var(--color-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  /* Diagonal bottom clip */
+  .hero__clip {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: var(--color-surface);
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+    z-index: 3;
+  }
+
+  /* Reveal delays for hero children */
+  .hero__inner .reveal:nth-child(1) { animation-delay: 0.05s; }
+  .hero__inner .reveal:nth-child(2) { animation-delay: 0.15s; }
+  .hero__inner .reveal:nth-child(3) { animation-delay: 0.25s; }
+  .hero__inner .reveal:nth-child(4) { animation-delay: 0.35s; }
+</style>

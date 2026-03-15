@@ -1,0 +1,116 @@
+---
+// Privacy — trust section (not the full policy page).
+const points = [
+  {
+    icon: '◎',
+    title: 'Your key, your calls',
+    body: 'Devoke uses your own Anthropic API key. Requests go directly from your browser to Anthropic — no proxy, no middleman, no Devoke server ever sees your data.',
+  },
+  {
+    icon: '◈',
+    title: 'Nothing is stored',
+    body: "Devoke keeps an in-memory cache to avoid re-processing posts you've already seen. It's wiped when you close the tab. Nothing is written to disk or sent anywhere.",
+  },
+  {
+    icon: '◉',
+    title: 'Original is always intact',
+    body: 'We only rewrite what\'s displayed. The original HTML is preserved in memory for the toggle — we never modify or delete the content a platform published.',
+  },
+];
+---
+
+<section class="priv section grain" id="privacy-trust" aria-label="Privacy and trust">
+  <div class="container">
+    <span class="section-label reveal">Privacy</span>
+    <h2 class="priv__heading reveal">We don't want your data.</h2>
+    <p class="priv__sub reveal">
+      Devoke is a client-side extension. There are no Devoke accounts, no Devoke servers,
+      and no analytics collecting your browsing habits.
+    </p>
+
+    <ul class="priv__grid reveal" role="list">
+      {points.map((p) => (
+        <li class="priv__card">
+          <span class="priv__icon" aria-hidden="true">{p.icon}</span>
+          <h3 class="priv__title">{p.title}</h3>
+          <p class="priv__body">{p.body}</p>
+        </li>
+      ))}
+    </ul>
+
+    <p class="priv__link reveal">
+      <a href="/privacy">Read the full privacy policy →</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .priv {
+    background: var(--color-surface);
+    clip-path: var(--clip-full);
+    margin-block: -2px;
+  }
+
+  .priv__heading { margin-bottom: 0.5rem; }
+  .priv__sub     { margin-bottom: 3rem; }
+
+  .priv__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .priv__card {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(122, 184, 138, 0.1);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: border-color 0.25s;
+  }
+
+  .priv__card:hover {
+    border-color: rgba(122, 184, 138, 0.3);
+  }
+
+  .priv__icon {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--color-green);
+    opacity: 0.7;
+    line-height: 1;
+  }
+
+  .priv__title {
+    font-size: 1.2rem;
+    color: var(--color-text);
+  }
+
+  .priv__body {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    max-width: 100%;
+  }
+
+  .priv__link {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    max-width: 100%;
+  }
+
+  .priv__link a {
+    color: var(--color-green);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .priv__link a:hover {
+    opacity: 1;
+    text-decoration: none;
+  }
+</style>

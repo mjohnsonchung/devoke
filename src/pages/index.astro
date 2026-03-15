@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Platforms from '../components/Platforms.astro';
+import Features from '../components/Features.astro';
+import PrivacyTrust from '../components/Privacy.astro';
+import InstallCTA from '../components/InstallCTA.astro';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Devoke',
+  operatingSystem: 'Chrome',
+  applicationCategory: 'BrowserApplication',
+  description:
+    'Devoke rewrites sensationalist headlines and social media posts into clear, factual language. Chrome extension for X, Reddit, news sites, and Google Search.',
+  url: 'https://devoke.app',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    'Rewrites sensationalist headlines in real time',
+    'Hides vanity metrics (likes, votes, view counts)',
+    'One-tap toggle to see the original content',
+    'Works on X/Twitter, Reddit, news sites, and Google Search',
+    'Filter intensity control: Light, Balanced, Deep',
+    'Client-side only — no servers, no tracking',
+  ],
+};
+---
+
+<Base
+  title="Devoke"
+  description="Devoke rewrites sensationalist headlines and social media posts into clear, factual language. Chrome extension for X, Reddit, news sites, and Google Search."
+  canonical="https://devoke.app/"
+  schema={schema}
+>
+  <main>
+    <Hero />
+    <BeforeAfter />
+    <HowItWorks />
+    <Platforms />
+    <Features />
+    <PrivacyTrust />
+    <InstallCTA />
+  </main>
+</Base>

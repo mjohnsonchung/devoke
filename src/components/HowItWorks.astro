@@ -1,0 +1,108 @@
+---
+// HowItWorks — numbered 3-step flow. Install → Browse → Read calmly.
+const steps = [
+  {
+    n: '01',
+    title: 'Install',
+    body: "Add Devoke to Chrome and paste your Anthropic API key. Your key never leaves your browser — it's stored locally and used only for rewriting.",
+  },
+  {
+    n: '02',
+    title: 'Browse',
+    body: 'Visit X, Reddit, news sites, or Google Search as you normally would. Devoke watches the viewport and processes posts as they appear.',
+  },
+  {
+    n: '03',
+    title: 'Read clearly',
+    body: 'Sensationalist posts are quietly rewritten in place. The small ◎ icon marks every rewrite — tap it any time to see the original, word for word.',
+  },
+];
+---
+
+<section class="hiw section" id="how-it-works" aria-label="How Devoke works">
+  <div class="container">
+    <span class="section-label reveal">How it works</span>
+    <h2 class="hiw__heading reveal">Three steps. Zero friction.</h2>
+
+    <ol class="hiw__steps" role="list">
+      {steps.map((step) => (
+        <li class="hiw__step reveal">
+          <span class="hiw__num" aria-hidden="true">{step.n}</span>
+          <div class="hiw__content">
+            <h3 class="hiw__title">{step.title}</h3>
+            <p class="hiw__body">{step.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .hiw {
+    background: var(--color-bg);
+  }
+
+  .hiw__heading {
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .hiw__steps {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .hiw__step {
+    background: var(--color-surface);
+    padding: 2.8rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    position: relative;
+    /* Subtle left border accent on desktop */
+    border-top: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+
+  .hiw__step:hover {
+    border-color: var(--color-green);
+  }
+
+  .hiw__num {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--color-green);
+    opacity: 0.35;
+    letter-spacing: -0.03em;
+    user-select: none;
+  }
+
+  .hiw__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .hiw__title {
+    font-size: 1.6rem;
+    color: var(--color-text);
+  }
+
+  .hiw__body {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    max-width: 100%;
+  }
+
+  /* Stagger reveals per step */
+  .hiw__steps .reveal:nth-child(1) { animation-delay: 0.05s; }
+  .hiw__steps .reveal:nth-child(2) { animation-delay: 0.15s; }
+  .hiw__steps .reveal:nth-child(3) { animation-delay: 0.25s; }
+</style>

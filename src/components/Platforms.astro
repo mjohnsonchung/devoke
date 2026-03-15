@@ -1,0 +1,96 @@
+---
+// Platforms — horizontal chip row showing active platforms.
+const platforms = [
+  { name: 'X / Twitter', icon: '𝕏', note: 'Tweets & threads' },
+  { name: 'Reddit',      icon: '⬡', note: 'Posts & titles' },
+  { name: 'News sites',  icon: '◈', note: '30+ curated outlets' },
+  { name: 'Google',      icon: '◉', note: 'Search result titles' },
+];
+---
+
+<section class="plat section" aria-label="Supported platforms" id="platforms">
+  <div class="container">
+    <span class="section-label reveal">Where it runs</span>
+    <h2 class="plat__heading reveal">Every feed. Every headline.</h2>
+    <p class="plat__sub reveal">
+      Devoke runs wherever sensationalism lives — social feeds, news sites,
+      and search results.
+    </p>
+
+    <ul class="plat__grid reveal" role="list">
+      {platforms.map((p) => (
+        <li class="plat__chip">
+          <span class="plat__icon" aria-hidden="true">{p.icon}</span>
+          <div class="plat__info">
+            <span class="plat__name">{p.name}</span>
+            <span class="plat__note">{p.note}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .plat {
+    background: var(--color-surface);
+    clip-path: var(--clip-full);
+    margin-block: -2px;
+  }
+
+  .plat__heading { margin-bottom: 0.5rem; }
+  .plat__sub     { margin-bottom: 3rem; }
+
+  .plat__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .plat__chip {
+    background: var(--color-bg);
+    border: 1px solid rgba(122, 184, 138, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color 0.25s, transform 0.2s;
+  }
+
+  .plat__chip:hover {
+    border-color: rgba(122, 184, 138, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .plat__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--color-green);
+    opacity: 0.75;
+    min-width: 2rem;
+    text-align: center;
+    font-family: var(--font-display);
+  }
+
+  .plat__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .plat__name {
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .plat__note {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+  }
+</style>

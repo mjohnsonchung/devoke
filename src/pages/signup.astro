@@ -1,0 +1,304 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Create Account"
+  description="Create your Devoke account and start your free 7-day trial."
+  canonical="https://devoke.app/signup"
+>
+  <main class="auth-wrap">
+    <a href="/" class="auth-back" aria-label="Back to Devoke homepage">◎ Devoke</a>
+
+    <div class="auth-card">
+      <h1 class="auth-heading">Start your free trial.</h1>
+      <p class="auth-sub">
+        7 days free. Card required — you won't be charged until the trial ends.
+      </p>
+
+      <!-- Step 1: Create account -->
+      <form class="auth-form" id="signup-form" novalidate>
+        <div class="auth-field">
+          <label for="email" class="auth-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+            class="auth-input"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="password" class="auth-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="new-password"
+            required
+            minlength="8"
+            class="auth-input"
+            placeholder="At least 8 characters"
+          />
+        </div>
+
+        <div class="auth-error" id="auth-error" role="alert" hidden></div>
+
+        <p class="auth-tier-label">Choose your plan:</p>
+        <div class="auth-tiers" role="radiogroup" aria-label="Plan selection">
+          <label class="auth-tier" id="label-basic">
+            <input type="radio" name="tier" value="basic" checked class="auth-tier-radio" />
+            <span class="auth-tier-name">Basic</span>
+            <span class="auth-tier-price">£4.99/mo · 500 rewrites</span>
+          </label>
+          <label class="auth-tier auth-tier--pro" id="label-pro">
+            <input type="radio" name="tier" value="pro" class="auth-tier-radio" />
+            <span class="auth-tier-name">Pro</span>
+            <span class="auth-tier-price">£9.99/mo · 2,000 rewrites</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit" id="submit-btn">
+          Create account →
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account? <a href="/login">Sign in →</a>
+      </p>
+    </div>
+  </main>
+</Base>
+
+<script>
+  const form      = document.getElementById('signup-form') as HTMLFormElement;
+  const errorEl   = document.getElementById('auth-error') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  const SUPABASE_URL      = import.meta.env.PUBLIC_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+  // Pre-select tier from URL param if present (?tier=pro)
+  const params = new URLSearchParams(location.search);
+  const tierParam = params.get('tier');
+  if (tierParam === 'pro') {
+    (form.elements.namedItem('tier') as RadioNodeList).value = 'pro';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating account…';
+
+    const email    = (form.elements.namedItem('email')    as HTMLInputElement).value.trim();
+    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+    const tier     = (form.elements.namedItem('tier')     as RadioNodeList).value;
+
+    // 1. Create Supabase account
+    const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey':       SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const signupData = await signupRes.json();
+
+    if (!signupRes.ok) {
+      errorEl.textContent = signupData.error_description ?? signupData.message ?? 'Signup failed.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create account →';
+      return;
+    }
+
+    const accessToken = signupData.access_token;
+
+    // Store session
+    localStorage.setItem('devoke_session', JSON.stringify({
+      access_token:  accessToken,
+      refresh_token: signupData.refresh_token,
+      expires_at:    Date.now() + (signupData.expires_in ?? 3600) * 1000,
+      email,
+    }));
+
+    // 2. Create Stripe Checkout Session for the chosen tier
+    submitBtn.textContent = 'Redirecting to checkout…';
+
+    const priceId = tier === 'pro'
+      ? import.meta.env.PUBLIC_STRIPE_PRICE_PRO
+      : import.meta.env.PUBLIC_STRIPE_PRICE_BASIC;
+
+    const checkoutRes = await fetch('/api/stripe/checkout', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ priceId }),
+    });
+
+    const checkoutData = await checkoutRes.json();
+
+    if (!checkoutRes.ok || !checkoutData.url) {
+      errorEl.textContent = 'Could not start checkout. Please try again.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create account →';
+      return;
+    }
+
+    window.location.href = checkoutData.url;
+  });
+</script>
+
+<style>
+  /* Reuse auth-wrap styles from login.astro via global.css — duplicating here for self-containment */
+  .auth-wrap {
+    min-height: 100svh;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  .auth-back {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-green);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .auth-back:hover { opacity: 1; text-decoration: none; }
+
+  .auth-card {
+    background: var(--color-surface);
+    border: 1px solid rgba(122, 184, 138, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: min(440px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .auth-heading { font-size: 2.2rem; color: var(--color-text); }
+
+  .auth-sub {
+    font-size: 0.88rem;
+    color: var(--color-muted);
+    max-width: 100%;
+    margin: -0.8rem 0 0;
+  }
+
+  .auth-form { display: flex; flex-direction: column; gap: 1.2rem; }
+
+  .auth-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .auth-label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .auth-input {
+    background: var(--color-bg);
+    border: 1px solid rgba(122, 184, 138, 0.2);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.9rem;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .auth-input:focus { border-color: var(--color-green); }
+  .auth-input::placeholder { color: var(--color-muted); opacity: 0.5; }
+
+  .auth-error {
+    font-family: var(--font-ui);
+    font-size: 0.83rem;
+    color: var(--color-red);
+    background: rgba(196, 117, 106, 0.08);
+    border: 1px solid rgba(196, 117, 106, 0.2);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.8rem;
+  }
+
+  .auth-tier-label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    max-width: 100%;
+    margin-bottom: -0.6rem;
+  }
+
+  .auth-tiers { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .auth-tier {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: var(--color-bg);
+    border: 1px solid rgba(122, 184, 138, 0.15);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .auth-tier:has(.auth-tier-radio:checked) {
+    border-color: var(--color-green);
+  }
+
+  .auth-tier--pro:has(.auth-tier-radio:checked) {
+    background: rgba(122, 184, 138, 0.05);
+  }
+
+  .auth-tier-radio { accent-color: var(--color-green); }
+
+  .auth-tier-name {
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text);
+    flex: 1;
+  }
+
+  .auth-tier-price {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    color: var(--color-muted);
+  }
+
+  .auth-submit { width: 100%; justify-content: center; }
+
+  .auth-switch {
+    font-family: var(--font-ui);
+    font-size: 0.83rem;
+    color: var(--color-muted);
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .auth-switch a { color: var(--color-green); }
+</style>

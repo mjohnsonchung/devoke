@@ -1,0 +1,222 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Sign In"
+  description="Sign in to your Devoke account."
+  canonical="https://devoke.app/login"
+>
+  <main class="auth-wrap">
+    <a href="/" class="auth-back" aria-label="Back to Devoke homepage">◎ Devoke</a>
+
+    <div class="auth-card">
+      <h1 class="auth-heading">Welcome back.</h1>
+      <p class="auth-sub">Sign in to continue browsing calmly.</p>
+
+      <form class="auth-form" id="login-form" novalidate>
+        <div class="auth-field">
+          <label for="email" class="auth-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+            class="auth-input"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="password" class="auth-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            required
+            class="auth-input"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div class="auth-error" id="auth-error" role="alert" hidden></div>
+
+        <button type="submit" class="btn btn-primary auth-submit" id="submit-btn">
+          Sign in
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        No account? <a href="/signup">Create one →</a>
+      </p>
+    </div>
+  </main>
+</Base>
+
+<script>
+  const form     = document.getElementById('login-form') as HTMLFormElement;
+  const errorEl  = document.getElementById('auth-error') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  const SUPABASE_URL      = import.meta.env.PUBLIC_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in…';
+
+    const email    = (form.elements.namedItem('email')    as HTMLInputElement).value.trim();
+    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey':       SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      errorEl.textContent = data.error_description ?? data.message ?? 'Sign-in failed.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign in';
+      return;
+    }
+
+    // Store session in localStorage for dashboard use
+    localStorage.setItem('devoke_session', JSON.stringify({
+      access_token:  data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at:    Date.now() + data.expires_in * 1000,
+      email,
+    }));
+
+    window.location.href = '/dashboard';
+  });
+</script>
+
+<style>
+  .auth-wrap {
+    min-height: 100svh;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  .auth-back {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-green);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .auth-back:hover { opacity: 1; text-decoration: none; }
+
+  .auth-card {
+    background: var(--color-surface);
+    border: 1px solid rgba(122, 184, 138, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: min(400px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .auth-heading {
+    font-size: 2.2rem;
+    color: var(--color-text);
+  }
+
+  .auth-sub {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    max-width: 100%;
+    margin: -0.8rem 0 0;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .auth-label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .auth-input {
+    background: var(--color-bg);
+    border: 1px solid rgba(122, 184, 138, 0.2);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.9rem;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .auth-input:focus {
+    border-color: var(--color-green);
+  }
+
+  .auth-input::placeholder {
+    color: var(--color-muted);
+    opacity: 0.5;
+  }
+
+  .auth-error {
+    font-family: var(--font-ui);
+    font-size: 0.83rem;
+    color: var(--color-red);
+    background: rgba(196, 117, 106, 0.08);
+    border: 1px solid rgba(196, 117, 106, 0.2);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.8rem;
+  }
+
+  .auth-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.3rem;
+  }
+
+  .auth-switch {
+    font-family: var(--font-ui);
+    font-size: 0.83rem;
+    color: var(--color-muted);
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .auth-switch a {
+    color: var(--color-green);
+  }
+</style>

@@ -1,0 +1,139 @@
+---
+// Features — three feature cards: metric hiding, filter intensity, show original.
+const features = [
+  {
+    n: '—',
+    title: 'Hide the score.',
+    body: 'Like counts, repost tallies, vote scores — these numbers are engineered to influence you. Devoke hides them by default. You decide what deserves your attention, not an algorithm.',
+    tag: 'Metric hiding',
+  },
+  {
+    n: '—',
+    title: 'Set your threshold.',
+    body: 'Light mode rewrites only the clearest manipulation. Deep mode catches mild loaded language and ambiguous framing. Balanced sits in between. Adjust any time from the popup.',
+    tag: 'Filter intensity',
+  },
+  {
+    n: '—',
+    title: 'Always see the original.',
+    body: 'Every rewrite has a ◎ toggle. One tap shows you the original, word for word. Devoke is a translator — it never hides what was actually said.',
+    tag: 'Full transparency',
+  },
+];
+---
+
+<section class="feat section" id="features" aria-label="Features">
+  <div class="container">
+    <span class="section-label reveal">Features</span>
+    <h2 class="feat__heading reveal">Built for trust, not dependency.</h2>
+
+    <ul class="feat__list" role="list">
+      {features.map((f, i) => (
+        <li class={`feat__item reveal ${i % 2 === 1 ? 'feat__item--alt' : ''}`}>
+          <div class="feat__tag-wrap">
+            <span class="feat__tag">{f.tag}</span>
+          </div>
+          <div class="feat__body-wrap">
+            <h3 class="feat__title">{f.title}</h3>
+            <p class="feat__body">{f.body}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .feat {
+    background: var(--color-bg);
+  }
+
+  .feat__heading {
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .feat__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .feat__item {
+    background: var(--color-surface);
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+    border-left: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+
+  .feat__item:hover {
+    border-color: var(--color-green);
+  }
+
+  /* Alternate: push tag to the right */
+  .feat__item--alt {
+    grid-template-columns: 1fr 200px;
+  }
+
+  .feat__item--alt .feat__tag-wrap {
+    order: 2;
+    text-align: right;
+  }
+
+  .feat__item--alt .feat__body-wrap {
+    order: 1;
+  }
+
+  @media (max-width: 680px) {
+    .feat__item,
+    .feat__item--alt {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .feat__item--alt .feat__tag-wrap { order: 0; text-align: left; }
+    .feat__item--alt .feat__body-wrap { order: 1; }
+  }
+
+  .feat__tag-wrap {
+    padding-top: 0.3rem;
+  }
+
+  .feat__tag {
+    font-family: var(--font-ui);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-green);
+    padding: 0.25rem 0.6rem;
+    border: 1px solid rgba(122, 184, 138, 0.3);
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .feat__body-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .feat__title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--color-text);
+    font-style: italic;
+  }
+
+  .feat__body {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--color-muted);
+    max-width: 56ch;
+  }
+</style>

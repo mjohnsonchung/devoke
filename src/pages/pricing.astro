@@ -1,0 +1,232 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+import InstallCTA from '../components/InstallCTA.astro';
+
+const tiers = [
+  {
+    name:    'Basic',
+    price:   '£4.99',
+    period:  '/month',
+    limit:   '500 rewrites',
+    features: [
+      '500 rewrites per month',
+      'X / Twitter + Reddit',
+      'Hide vanity metrics',
+      'Filter intensity control',
+      'Show original toggle',
+    ],
+    cta:     'Start free trial',
+    priceKey: 'basic',
+    highlight: false,
+  },
+  {
+    name:    'Pro',
+    price:   '£9.99',
+    period:  '/month',
+    limit:   '2,000 rewrites',
+    features: [
+      '2,000 rewrites per month',
+      'All platforms — X, Reddit, News, Google',
+      'Hide vanity metrics',
+      'Filter intensity control',
+      'Show original toggle',
+    ],
+    cta:     'Start free trial',
+    priceKey: 'pro',
+    highlight: true,
+  },
+];
+---
+
+<Base
+  title="Pricing"
+  description="Devoke plans start at £4.99/month with a free 7-day trial. No API key needed — just sign up and start browsing calmly."
+  canonical="https://devoke.app/pricing"
+>
+  <main>
+    <section class="pricing section">
+      <div class="container">
+        <span class="section-label">Pricing</span>
+        <h1 class="pricing__heading">7-day free trial.<br /><em>Cancel any time.</em></h1>
+        <p class="pricing__sub">
+          No API key. No setup. Card required for trial — you won't be charged for 7 days.
+        </p>
+
+        <div class="pricing__grid">
+          {tiers.map((tier) => (
+            <div class={`pricing__card ${tier.highlight ? 'pricing__card--pro' : ''}`}>
+              {tier.highlight && <span class="pricing__badge">Most popular</span>}
+              <div class="pricing__card-header">
+                <h2 class="pricing__name">{tier.name}</h2>
+                <div class="pricing__price-row">
+                  <span class="pricing__price">{tier.price}</span>
+                  <span class="pricing__period">{tier.period}</span>
+                </div>
+                <p class="pricing__limit">{tier.limit}</p>
+              </div>
+
+              <ul class="pricing__features">
+                {tier.features.map((f) => (
+                  <li class="pricing__feature">
+                    <span class="pricing__check" aria-hidden="true">◎</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={`/signup?tier=${tier.priceKey}`}
+                class={`btn pricing__btn ${tier.highlight ? 'btn-primary' : 'btn-ghost'}`}
+              >
+                {tier.cta}
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <p class="pricing__footnote">
+          After your free trial, billing starts automatically. Cancel any time from your dashboard.
+          All plans include the 7-day free trial — card required upfront.
+        </p>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .pricing {
+    background: var(--color-bg);
+    min-height: 100svh;
+  }
+
+  .pricing__heading {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    margin-bottom: 0.8rem;
+  }
+
+  .pricing__heading em {
+    font-style: italic;
+    color: var(--color-green);
+  }
+
+  .pricing__sub {
+    margin-bottom: 3.5rem;
+    font-size: 1.05rem;
+  }
+
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 780px;
+  }
+
+  .pricing__card {
+    background: var(--color-surface);
+    border: 1px solid rgba(122, 184, 138, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+    position: relative;
+  }
+
+  .pricing__card--pro {
+    border-color: rgba(122, 184, 138, 0.4);
+  }
+
+  .pricing__badge {
+    position: absolute;
+    top: -1px;
+    right: 1.5rem;
+    background: var(--color-green);
+    color: var(--color-bg);
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .pricing__card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .pricing__name {
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .pricing__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .pricing__price {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    color: var(--color-text);
+    line-height: 1;
+  }
+
+  .pricing__period {
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .pricing__limit {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--color-green);
+    max-width: 100%;
+  }
+
+  .pricing__features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+  }
+
+  .pricing__feature {
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .pricing__check {
+    color: var(--color-green);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .pricing__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pricing__footnote {
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    opacity: 0.7;
+    max-width: 52ch;
+    font-style: italic;
+  }
+</style>

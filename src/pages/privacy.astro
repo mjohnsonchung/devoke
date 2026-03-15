@@ -1,0 +1,230 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Privacy Policy"
+  description="Devoke's privacy policy. No personal data is collected. Your API key stays in your browser. No servers, no tracking, no accounts."
+  canonical="https://devoke.app/privacy"
+>
+  <div class="policy-wrap">
+    <header class="policy-header">
+      <a href="/" class="policy-back" aria-label="Back to Devoke homepage">
+        <span aria-hidden="true">←</span> Devoke
+      </a>
+    </header>
+
+    <main class="policy-body container">
+      <h1>Privacy Policy</h1>
+      <p class="policy-date">Last updated: March 2026</p>
+
+      <section aria-labelledby="overview">
+        <h2 id="overview">Overview</h2>
+        <p>
+          Devoke is a browser extension that runs entirely on your device. We do not operate
+          servers that receive, store, or process your browsing data. There are no Devoke
+          accounts and no analytics.
+        </p>
+      </section>
+
+      <section aria-labelledby="data-collected">
+        <h2 id="data-collected">What data Devoke handles</h2>
+
+        <h3>Text content from web pages</h3>
+        <p>
+          When you browse X, Reddit, news sites, or Google Search, Devoke reads the text
+          of posts and headlines visible in your viewport. This text is sent to Anthropic's
+          API using your own API key to generate a rewritten version. Devoke does not store
+          this text anywhere — it passes through in-memory only and is discarded when you
+          close the tab.
+        </p>
+
+        <h3>Your Anthropic API key</h3>
+        <p>
+          Your API key is stored using <code>chrome.storage.sync</code>, which is managed
+          by Chrome and may sync across your Chrome profile. The key is only ever sent to
+          Anthropic's API endpoints — never to any Devoke server, because no Devoke server
+          exists. Do not share your API key with anyone.
+        </p>
+
+        <h3>Extension settings</h3>
+        <p>
+          Your settings (enabled state, filter intensity, metric hiding preference) are
+          stored in <code>chrome.storage.sync</code>. These preferences are local to your
+          Chrome profile and are never transmitted anywhere.
+        </p>
+      </section>
+
+      <section aria-labelledby="third-parties">
+        <h2 id="third-parties">Third-party services</h2>
+        <p>
+          The only third-party service Devoke communicates with is the
+          <strong>Anthropic API</strong> (<a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">Anthropic Privacy Policy</a>).
+          Requests are made directly from your browser to Anthropic using your API key.
+          Anthropic's data handling is governed by their own privacy policy.
+        </p>
+        <p>
+          Devoke does not use Google Analytics, Sentry, Mixpanel, or any other analytics
+          or error-tracking service.
+        </p>
+      </section>
+
+      <section aria-labelledby="permissions">
+        <h2 id="permissions">Browser permissions</h2>
+        <p>Devoke requests the following Chrome permissions:</p>
+        <ul>
+          <li>
+            <strong>Host permissions</strong> for X, Reddit, supported news sites, and Google
+            Search — required to inject the content script that reads and rewrites page text.
+          </li>
+          <li>
+            <strong>storage</strong> — to save your API key and settings via
+            <code>chrome.storage.sync</code>.
+          </li>
+        </ul>
+        <p>
+          Devoke does not request <code>history</code>, <code>cookies</code>,
+          <code>tabs</code>, or any other broad permission.
+        </p>
+      </section>
+
+      <section aria-labelledby="children">
+        <h2 id="children">Children's privacy</h2>
+        <p>
+          Devoke is not directed at children under 13 and does not knowingly collect
+          information from children.
+        </p>
+      </section>
+
+      <section aria-labelledby="changes">
+        <h2 id="changes">Changes to this policy</h2>
+        <p>
+          If this policy changes in a material way, we will update the "Last updated" date
+          at the top of this page. Continued use of the extension constitutes acceptance
+          of the updated policy.
+        </p>
+      </section>
+
+      <section aria-labelledby="contact">
+        <h2 id="contact">Contact</h2>
+        <p>
+          Questions about this policy? Open an issue on the
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer">Devoke GitHub repository</a>
+          or reach out directly.
+        </p>
+      </section>
+    </main>
+  </div>
+</Base>
+
+<style>
+  .policy-wrap {
+    background: var(--color-bg);
+    min-height: 100svh;
+  }
+
+  .policy-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(122, 184, 138, 0.08);
+  }
+
+  .policy-back {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-green);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .policy-back:hover {
+    opacity: 1;
+    text-decoration: none;
+  }
+
+  .policy-body {
+    padding-block: clamp(3rem, 8vw, 6rem);
+    max-width: 720px;
+  }
+
+  .policy-body h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .policy-date {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin-bottom: 3rem;
+    max-width: 100%;
+    font-style: italic;
+  }
+
+  .policy-body section {
+    margin-bottom: 2.5rem;
+  }
+
+  .policy-body h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    margin-bottom: 0.8rem;
+    margin-top: 2rem;
+    color: var(--color-text);
+  }
+
+  .policy-body h3 {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-ui);
+    font-weight: 500;
+  }
+
+  .policy-body p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--color-muted);
+    max-width: 62ch;
+    margin-bottom: 0.8rem;
+  }
+
+  .policy-body ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .policy-body li {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  .policy-body code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82em;
+    background: rgba(122, 184, 138, 0.1);
+    color: var(--color-green);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+
+  .policy-body a {
+    color: var(--color-green);
+    text-decoration: underline;
+    text-decoration-color: rgba(122, 184, 138, 0.4);
+  }
+
+  .policy-body strong {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+</style>

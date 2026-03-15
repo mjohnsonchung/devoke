@@ -107,6 +107,7 @@ import Base from '../layouts/Base.astro';
       return;
     }
 
+    unauthEl.hidden = true;
     contentEl.hidden = false;
 
     // Populate email
@@ -184,6 +185,8 @@ import Base from '../layouts/Base.astro';
 </script>
 
 <style>
+  [hidden] { display: none !important; }
+
   .dash-wrap {
     min-height: 100svh;
     background: var(--color-bg);

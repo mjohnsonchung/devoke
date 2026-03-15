@@ -164,19 +164,34 @@ import Base from '../layouts/Base.astro';
       ? 'price_1TB7ibREeZ41iNyGy8fJfJIJ'
       : 'price_1TB7hrREeZ41iNyGMSoWwjVa';
 
-    const checkoutRes = await fetch('/api/stripe/checkout', {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ priceId }),
-    });
+    let checkoutRes: Response;
+    try {
+      checkoutRes = await fetch('/api/stripe/checkout', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ priceId }),
+        signal: AbortSignal.timeout(15000),
+      });
+    } catch (err: any) {
+      errorEl.textContent = `Checkout request failed: ${err?.message ?? 'timeout'}`;
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create account →';
+      return;
+    }
 
-    const checkoutData = await checkoutRes.json();
+    let checkoutData: any;
+    try {
+      checkoutData = await checkoutRes.json();
+    } catch {
+      checkoutData = {};
+    }
 
     if (!checkoutRes.ok || !checkoutData.url) {
-      errorEl.textContent = 'Could not start checkout. Please try again.';
+      errorEl.textContent = `Checkout error (${checkoutRes.status}): ${checkoutData?.error ?? 'unknown'}`;
       errorEl.hidden = false;
       submitBtn.disabled = false;
       submitBtn.textContent = 'Create account →';

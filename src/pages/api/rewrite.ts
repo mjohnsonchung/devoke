@@ -90,18 +90,19 @@ export const POST: APIRoute = async ({ request }) => {
   let rewritten: string;
 
   try {
-    const prompt = buildPrompt(text, platform, filterIntensity);
+    const { system, userMessage } = buildPrompt(text, platform, filterIntensity);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:  'POST',
       headers: {
-        'Content-Type':    'application/json',
-        'x-api-key':       apiKey,
+        'Content-Type':      'application/json',
+        'x-api-key':         apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model:      'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        messages:   [{ role: 'user', content: prompt }],
+        max_tokens: 512,
+        system,
+        messages:   [{ role: 'user', content: userMessage }],
       }),
     });
 
@@ -114,7 +115,9 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const data = await res.json();
-    rewritten = data.content?.[0]?.text ?? text;
+    const raw = (data.content?.[0]?.text ?? '').trim();
+    // Model outputs "KEEP" when content needs no change — return original
+    rewritten = raw === 'KEEP' ? text : raw;
   } catch (err) {
     console.error('[Devoke] Fetch error:', err);
     return new Response(JSON.stringify({ error: 'api_error' }), {
@@ -135,44 +138,84 @@ export const POST: APIRoute = async ({ request }) => {
   );
 };
 
-// ── Prompt builder (mirrors background.js logic) ───────────────────────────
+// ── Prompt builder ──────────────────────────────────────────────────────────
 
-function buildPrompt(text: string, platform: string, filterIntensity: string): string {
+function buildPrompt(
+  text: string,
+  platform: string,
+  filterIntensity: string,
+): { system: string; userMessage: string } {
+
+  const system = `You are a calm editorial translator. You read social media posts, headlines, and articles, then decide whether they contain manipulation. If they do, you rewrite them. If they don't, you leave them alone.
+
+You are NOT a censor. You are NOT a fact-checker. The information always survives — only the manipulation is removed.
+
+STRIP these patterns:
+- Sensationalism and hyperbole ("DESTROYING", "SHOCKING", "HORRIFYING", "devastating blow")
+- ALL CAPS used for emotional amplification
+- False urgency ("BREAKING", "RIGHT NOW", "HAPPENING NOW", "you need to see this immediately")
+- Manufactured outrage and rage-bait designed to provoke anger or fear
+- Pile-on language implying false consensus ("everyone is furious", "people can't believe", "the internet is losing it", "nobody can understand why")
+- Clickbait withholding — if a headline deliberately hides the key fact to force a click, state the fact directly
+
+PRESERVE these things completely:
+- All factual claims and specific details
+- Genuine emotion: joy, grief, love, humour, personal distress, excitement
+- Personal updates and human moments ("my dad passed away", "just got engaged")
+- The author's conclusion or opinion, stated calmly
+- Dry wit and irony — these are not manipulation
+
+WHEN TO OUTPUT "KEEP":
+If the text contains no manipulation — it is already calm, factual, or personal — output the single word KEEP and nothing else. Do not rewrite content that doesn't need it.
+
+OUTPUT FORMAT:
+- If rewriting: plain text only. No quotes, no preamble, no explanation.
+- If keeping: the word KEEP (uppercase, nothing else).`;
+
   const context: Record<string, string> = {
-    twitter: 'a social media post on X/Twitter',
+    twitter: 'a post on X/Twitter',
     reddit:  'a Reddit post or title',
-    news:    'a news article headline or paragraph',
+    news:    'a news headline or article paragraph',
     google:  'a search result title',
   };
 
   const intensity: Record<string, string> = {
-    light:    'Only rewrite if the manipulation is unambiguous. When in doubt, return the text unchanged.',
+    light:    'Be conservative. Only rewrite if the manipulation is very clear and unambiguous. When in doubt, output KEEP.',
     balanced: '',
-    deep:     'Also rewrite mild loaded language, ambiguous framing, and passive sensationalism.',
+    deep:     'Apply extra scrutiny. Also rewrite mild loaded language, ambiguous framing, and implied urgency — not just obvious manipulation.',
   };
 
-  const ctx = context[platform] ?? 'a social media post';
-  const ins = intensity[filterIntensity] ?? '';
+  const ctx  = context[platform]  ?? 'a social media post';
+  const ins  = intensity[filterIntensity] ?? '';
 
-  return `You are a calm editorial filter. You will be given ${ctx}.
+  const examples = `Here are examples of correct behaviour:
 
-Rewrite it to remove:
-- Sensationalism and hyperbole
-- ALL CAPS used for emotional amplification
-- Manufactured outrage and rage-bait
-- Emotional manipulation designed to provoke clicks
+Input: "This will DESTROY everything we've built. Experts are HORRIFIED."
+Output: Experts have raised serious concerns.
 
-Preserve:
-- All factual information
-- Genuine emotion (joy, grief, humour)
-- Personal updates and human moments
-- The original meaning
+Input: "🚨BREAKING🚨 Something MASSIVE is happening RIGHT NOW and you need to see this"
+Output: A significant development has been reported.
 
-Flag unverified or contested claims with [unverified claim] at the start.
-If the text is already calm and factual, return it unchanged.
-${ins}
-Return plain text only. No preamble, no explanation, no quotes.
+Input: "Everyone is furious. People across the country can't believe what they just admitted."
+Output: A recent admission has drawn criticism.
 
-Text to process:
+Input: "You won't BELIEVE what this politician just said 😱"
+Output: A politician made a notable statement.
+
+Input: "Scientists discover TERRIFYING truth about everyday household items"
+Output: Researchers have identified potential risks in some common household items.
+
+Input: "My dad passed away this morning. He was the kindest person I've ever known."
+Output: KEEP
+
+Input: "New study finds moderate coffee consumption linked to lower risk of type 2 diabetes."
+Output: KEEP
+
+---
+Now process the following ${ctx}.${ins ? '\n' + ins : ''}
+
+Text:
 ${text}`;
+
+  return { system, userMessage: examples };
 }

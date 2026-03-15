@@ -116,8 +116,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     const data = await res.json();
     const raw = (data.content?.[0]?.text ?? '').trim();
-    // Model outputs "KEEP" when content needs no change — return original
-    rewritten = raw === 'KEEP' ? text : raw;
+    // Model outputs "KEEP" when content needs no change — return original.
+    // Be robust: handle case variations and stray "Output: " prefixes.
+    const cleaned = raw.replace(/^output:\s*/i, '').trim();
+    rewritten = cleaned.toUpperCase() === 'KEEP' ? text : cleaned;
   } catch (err) {
     console.error('[Devoke] Fetch error:', err);
     return new Response(JSON.stringify({ error: 'api_error' }), {
@@ -169,8 +171,9 @@ WHEN TO OUTPUT "KEEP":
 If the text contains no manipulation — it is already calm, factual, or personal — output the single word KEEP and nothing else. Do not rewrite content that doesn't need it.
 
 OUTPUT FORMAT:
-- If rewriting: plain text only. No quotes, no preamble, no explanation.
-- If keeping: the word KEEP (uppercase, nothing else).`;
+Your entire response must be one of two things — nothing else is acceptable:
+- The rewritten text (plain text, no quotes, no preamble, no labels, no explanation)
+- The single word KEEP`;
 
   const context: Record<string, string> = {
     twitter: 'a post on X/Twitter',
@@ -188,34 +191,33 @@ OUTPUT FORMAT:
   const ctx  = context[platform]  ?? 'a social media post';
   const ins  = intensity[filterIntensity] ?? '';
 
-  const examples = `Here are examples of correct behaviour:
+  const examples = `Examples — each shows the text, then the correct response after →:
 
-Input: "This will DESTROY everything we've built. Experts are HORRIFIED."
-Output: Experts have raised serious concerns.
+"This will DESTROY everything we've built. Experts are HORRIFIED."
+→ Experts have raised serious concerns.
 
-Input: "🚨BREAKING🚨 Something MASSIVE is happening RIGHT NOW and you need to see this"
-Output: A significant development has been reported.
+"🚨BREAKING🚨 Something MASSIVE is happening RIGHT NOW and you need to see this"
+→ A significant development has been reported.
 
-Input: "Everyone is furious. People across the country can't believe what they just admitted."
-Output: A recent admission has drawn criticism.
+"Everyone is furious. People across the country can't believe what they just admitted."
+→ A recent admission has drawn criticism.
 
-Input: "You won't BELIEVE what this politician just said 😱"
-Output: A politician made a notable statement.
+"You won't BELIEVE what this politician just said 😱"
+→ A politician made a notable statement.
 
-Input: "Scientists discover TERRIFYING truth about everyday household items"
-Output: Researchers have identified potential risks in some common household items.
+"Scientists discover TERRIFYING truth about everyday household items"
+→ Researchers have identified potential risks in some common household items.
 
-Input: "My dad passed away this morning. He was the kindest person I've ever known."
-Output: KEEP
+"My dad passed away this morning. He was the kindest person I've ever known."
+→ KEEP
 
-Input: "New study finds moderate coffee consumption linked to lower risk of type 2 diabetes."
-Output: KEEP
+"New study finds moderate coffee consumption linked to lower risk of type 2 diabetes."
+→ KEEP
 
 ---
-Now process the following ${ctx}.${ins ? '\n' + ins : ''}
+Now respond with only the rewritten text or KEEP. Process this ${ctx}:${ins ? '\n' + ins : ''}
 
-Text:
-${text}`;
+"${text}"`;
 
   return { system, userMessage: examples };
 }

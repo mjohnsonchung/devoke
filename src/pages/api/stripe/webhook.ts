@@ -35,7 +35,8 @@ export const POST: APIRoute = async ({ request }) => {
         if (session.mode !== 'subscription') break;
 
         const userId = session.subscription_data?.metadata?.supabase_user_id
-          ?? session.metadata?.supabase_user_id;
+          ?? session.metadata?.supabase_user_id
+          ?? subscription.metadata?.supabase_user_id;
         if (!userId) break;
 
         const subscriptionId = session.subscription as string;

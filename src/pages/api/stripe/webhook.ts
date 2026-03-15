@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
           break;
         }
 
-        await supabase.from('subscriptions').upsert({
+        const { error: upsertErr } = await supabase.from('subscriptions').upsert({
           user_id:                userId,
           stripe_subscription_id: subscriptionId,
           stripe_price_id:        priceId,
@@ -72,6 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
           trial_end:              trialEnd(subscription),
           updated_at:             new Date().toISOString(),
         }, { onConflict: 'stripe_subscription_id' });
+        if (upsertErr) console.error('[Devoke] subscription upsert failed:', upsertErr);
         break;
       }
 

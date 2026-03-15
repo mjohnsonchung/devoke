@@ -99,7 +99,7 @@ import Base from '../layouts/Base.astro';
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
     const tier     = (form.elements.namedItem('tier')     as RadioNodeList).value;
 
-    // 1. Create Supabase account
+    // 1. Create Supabase account (fall back to sign-in if already registered)
     const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method:  'POST',
       headers: {
@@ -111,23 +111,51 @@ import Base from '../layouts/Base.astro';
 
     const signupData = await signupRes.json();
 
+    let accessToken: string | null = null;
+
     if (!signupRes.ok) {
-      errorEl.textContent = signupData.error_description ?? signupData.message ?? 'Signup failed.';
-      errorEl.hidden = false;
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Create account →';
-      return;
+      const errMsg: string = signupData.msg ?? signupData.error_description ?? signupData.message ?? '';
+      const alreadyExists = errMsg.toLowerCase().includes('already') || signupData.error_code === 'user_already_exists';
+
+      if (alreadyExists) {
+        // Try signing in instead
+        const signinRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+          body: JSON.stringify({ email, password }),
+        });
+        const signinData = await signinRes.json();
+        if (!signinRes.ok) {
+          errorEl.textContent = 'Account exists — sign in failed. Check your password or use the sign-in page.';
+          errorEl.hidden = false;
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create account →';
+          return;
+        }
+        accessToken = signinData.access_token;
+        localStorage.setItem('devoke_session', JSON.stringify({
+          access_token:  accessToken,
+          refresh_token: signinData.refresh_token,
+          expires_at:    Date.now() + (signinData.expires_in ?? 3600) * 1000,
+          email,
+        }));
+      } else {
+        errorEl.textContent = errMsg || 'Signup failed. Please try again.';
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create account →';
+        return;
+      }
+    } else {
+      accessToken = signupData.access_token;
+      // Store session for fresh signup
+      localStorage.setItem('devoke_session', JSON.stringify({
+        access_token:  accessToken,
+        refresh_token: signupData.refresh_token,
+        expires_at:    Date.now() + (signupData.expires_in ?? 3600) * 1000,
+        email,
+      }));
     }
-
-    const accessToken = signupData.access_token;
-
-    // Store session
-    localStorage.setItem('devoke_session', JSON.stringify({
-      access_token:  accessToken,
-      refresh_token: signupData.refresh_token,
-      expires_at:    Date.now() + (signupData.expires_in ?? 3600) * 1000,
-      email,
-    }));
 
     // 2. Create Stripe Checkout Session for the chosen tier
     submitBtn.textContent = 'Redirecting to checkout…';

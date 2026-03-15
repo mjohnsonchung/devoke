@@ -66,9 +66,9 @@ export const POST: APIRoute = async ({ request }) => {
       customer:                  customerId,
       mode:                      'subscription',
       line_items:                [{ price: priceId, quantity: 1 }],
-      trial_period_days:         7,
       payment_method_collection: 'always',
       subscription_data: {
+        trial_period_days: 7,
         metadata: { supabase_user_id: userId },
       },
       success_url: `https://devoke.app/dashboard?checkout=success`,

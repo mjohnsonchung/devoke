@@ -6,6 +6,17 @@ import { getStripe } from '../../../lib/stripe';
 import { tierFromPriceId } from '../../../lib/tiers';
 import type Stripe from 'stripe';
 
+// Stripe 2026 API moved current_period_end from subscription level to items.
+// Support both layouts.
+function periodEnd(sub: Stripe.Subscription): string | null {
+  const ts = (sub as any).current_period_end ?? sub.items.data[0]?.current_period_end;
+  return ts ? new Date(ts * 1000).toISOString() : null;
+}
+function trialEnd(sub: Stripe.Subscription): string | null {
+  const ts = (sub as any).trial_end;
+  return ts ? new Date(ts * 1000).toISOString() : null;
+}
+
 export const POST: APIRoute = async ({ request }) => {
   const stripe = getStripe();
   const secret = import.meta.env.STRIPE_WEBHOOK_SECRET;
@@ -34,14 +45,22 @@ export const POST: APIRoute = async ({ request }) => {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.mode !== 'subscription') break;
 
-        const userId = session.subscription_data?.metadata?.supabase_user_id
-          ?? session.metadata?.supabase_user_id
-          ?? subscription.metadata?.supabase_user_id;
-        if (!userId) break;
-
         const subscriptionId = session.subscription as string;
-        const subscription   = await stripe.subscriptions.retrieve(subscriptionId);
-        const priceId        = subscription.items.data[0]?.price.id ?? '';
+        if (!subscriptionId) break;
+
+        // Retrieve the subscription first — userId lives in subscription.metadata
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const priceId      = subscription.items.data[0]?.price.id ?? '';
+
+        const userId =
+          subscription.metadata?.supabase_user_id
+          ?? session.subscription_data?.metadata?.supabase_user_id
+          ?? session.metadata?.supabase_user_id;
+
+        if (!userId) {
+          console.error('[Devoke] checkout.session.completed: no supabase_user_id in metadata');
+          break;
+        }
 
         await supabase.from('subscriptions').upsert({
           user_id:                userId,
@@ -49,16 +68,14 @@ export const POST: APIRoute = async ({ request }) => {
           stripe_price_id:        priceId,
           status:                 subscription.status,
           tier:                   tierFromPriceId(priceId),
-          current_period_end:     new Date(subscription.current_period_end * 1000).toISOString(),
-          trial_end:              subscription.trial_end
-            ? new Date(subscription.trial_end * 1000).toISOString()
-            : null,
+          current_period_end:     periodEnd(subscription),
+          trial_end:              trialEnd(subscription),
           updated_at:             new Date().toISOString(),
         }, { onConflict: 'stripe_subscription_id' });
         break;
       }
 
-      // ── Subscription updated (upgrade, downgrade, renewal) ────────────────
+      // ── Subscription updated (upgrade, downgrade, renewal, cancel) ────────
       case 'customer.subscription.updated': {
         const sub     = event.data.object as Stripe.Subscription;
         const priceId = sub.items.data[0]?.price.id ?? '';
@@ -72,10 +89,8 @@ export const POST: APIRoute = async ({ request }) => {
             status:             sub.status,
             tier:               tierFromPriceId(priceId),
             stripe_price_id:    priceId,
-            current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
-            trial_end:          sub.trial_end
-              ? new Date(sub.trial_end * 1000).toISOString()
-              : null,
+            current_period_end: periodEnd(sub),
+            trial_end:          trialEnd(sub),
             updated_at:         new Date().toISOString(),
           })
           .eq('stripe_subscription_id', sub.id);

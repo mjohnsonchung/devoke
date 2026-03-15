@@ -133,8 +133,8 @@ import Base from '../layouts/Base.astro';
     submitBtn.textContent = 'Redirecting to checkout…';
 
     const priceId = tier === 'pro'
-      ? import.meta.env.PUBLIC_STRIPE_PRICE_PRO
-      : import.meta.env.PUBLIC_STRIPE_PRICE_BASIC;
+      ? 'price_1TB7ibREeZ41iNyGy8fJfJIJ'
+      : 'price_1TB7hrREeZ41iNyGMSoWwjVa';
 
     const checkoutRes = await fetch('/api/stripe/checkout', {
       method:  'POST',

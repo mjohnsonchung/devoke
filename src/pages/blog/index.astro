@@ -1,0 +1,305 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const articles = [
+  {
+    slug: 'we-rewrote-100-posts',
+    title: 'We Ran 100 Social Media Posts Through Devoke. Here\'s What We Found.',
+    excerpt: 'We pulled a sample of 100 posts from public feeds, ran each through Devoke\'s rewriter, and categorised the results. Some findings were expected. Others weren\'t — including which content category was the second most sensationalist.',
+    date: '2026-03-23',
+    readingTime: '6 min read',
+  },
+  {
+    slug: 'genuine-emotion-vs-manufactured-outrage',
+    title: 'The Difference Between Genuine Emotion and Manufactured Outrage Online',
+    excerpt: 'Devoke filters manipulation, not reality. Understanding the distinction — what gets changed and what doesn\'t — matters for what this tool is and what it isn\'t.',
+    date: '2026-03-22',
+    readingTime: '5 min read',
+  },
+  {
+    slug: 'why-hiding-like-counts-helps',
+    title: 'Why Hiding Like Counts Might Actually Help Your Mental Health',
+    excerpt: 'There\'s research on this. Instagram\'s own internal team ran the study, and the findings were uncomfortable enough that they sat on them. Here\'s what the data shows about metrics and self-image.',
+    date: '2026-03-21',
+    readingTime: '5 min read',
+  },
+  {
+    slug: 'how-to-read-news-without-anxiety',
+    title: 'How to Read the News Without It Ruining Your Day',
+    excerpt: 'News anxiety is real, documented, and getting worse. "Just stop reading the news" isn\'t a solution — it\'s an abdication. Five structural changes that actually work.',
+    date: '2026-03-20',
+    readingTime: '5 min read',
+  },
+  {
+    slug: 'news-feed-eradicator-vs-devoke',
+    title: 'News Feed Eradicator vs Devoke: What\'s the Difference?',
+    excerpt: 'News Feed Eradicator removes the feed. Devoke rewrites it. These are solutions to different problems — and for some people, the answer is both.',
+    date: '2026-03-19',
+    readingTime: '4 min read',
+  },
+  {
+    slug: 'best-chrome-extensions-social-media-anxiety',
+    title: 'The Best Chrome Extensions for Social Media Anxiety (Honestly Compared)',
+    excerpt: 'There are five distinct categories of tool that claim to help with social media overload. Most people pick the wrong one because they don\'t know the difference. An honest breakdown.',
+    date: '2026-03-18',
+    readingTime: '8 min read',
+  },
+  {
+    slug: 'how-to-stop-doomscrolling',
+    title: 'How to Stop Doomscrolling: 8 Methods That Actually Work',
+    excerpt: 'The standard advice — put your phone in another room — treats the symptom, not the system. Here\'s what\'s actually happening when you doomscroll, and eight approaches that address it at the right level.',
+    date: '2026-03-17',
+    readingTime: '9 min read',
+  },
+  {
+    slug: 'what-is-sensationalist-news',
+    title: 'What Is Sensationalist News — and Why Your Brain Keeps Falling For It',
+    excerpt: 'Sensationalism is almost 130 years old. What changed is the economics. A look at the specific linguistic fingerprints of manufactured outrage — and what the same information looks like without them.',
+    date: '2026-03-16',
+    readingTime: '7 min read',
+  },
+];
+
+const displayDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+---
+
+<Base
+  title="Blog"
+  description="Writing on sensationalism, doomscrolling, digital wellbeing, and how the internet got loud — from the team behind Devoke."
+  canonical="https://devoke.app/blog"
+>
+  <!-- Minimal header -->
+  <header class="blog-header">
+    <div class="container blog-header__inner">
+      <a href="/" class="blog-header__brand" aria-label="Devoke home">◎ Devoke</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="listing section">
+      <div class="container">
+
+        <header class="listing__head">
+          <span class="section-label reveal">Writing</span>
+          <h1 class="listing__title reveal">
+            On the internet,<br /><em>and what we do to it.</em>
+          </h1>
+          <p class="listing__sub reveal">
+            Sensationalism, doomscrolling, digital wellbeing, and how the
+            manipulation layer works — from the team behind Devoke.
+          </p>
+        </header>
+
+        <ul class="listing__list reveal" role="list">
+          {articles.map((article) => (
+            <li class="listing__item">
+              <a href={`/blog/${article.slug}`} class="listing__link" aria-label={article.title}>
+                <div class="listing__meta">
+                  <time datetime={article.date} class="listing__date">
+                    {displayDate(article.date)}
+                  </time>
+                  <span class="listing__time">{article.readingTime}</span>
+                </div>
+                <h2 class="listing__item-title">{article.title}</h2>
+                <p class="listing__excerpt">{article.excerpt}</p>
+                <span class="listing__read" aria-hidden="true">Read →</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="blog-footer">
+    <div class="container blog-footer__inner">
+      <span class="blog-footer__brand">◎ Devoke</span>
+      <nav class="blog-footer__nav" aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy policy</a>
+      </nav>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  /* Header */
+  .blog-header {
+    background: var(--color-bg);
+    border-bottom: 1px solid rgba(122, 184, 138, 0.08);
+    padding-block: 1.1rem;
+  }
+
+  .blog-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .blog-header__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-green);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+
+  .blog-header__brand:hover { text-decoration: none; opacity: 0.8; }
+
+  /* Listing section */
+  .listing {
+    background: var(--color-bg);
+  }
+
+  .listing__head {
+    max-width: 640px;
+    margin-bottom: clamp(3.5rem, 8vw, 6rem);
+  }
+
+  .listing__title {
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    margin-top: 0.8rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+
+  .listing__title em {
+    font-style: italic;
+    color: var(--color-green);
+  }
+
+  .listing__sub {
+    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    line-height: 1.75;
+    color: var(--color-muted);
+    max-width: 52ch;
+  }
+
+  /* Article list */
+  .listing__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .listing__item {
+    background: var(--color-surface);
+  }
+
+  .listing__link {
+    display: block;
+    padding: clamp(2rem, 4vw, 2.8rem) clamp(1.5rem, 4vw, 2.8rem);
+    border-left: 2px solid transparent;
+    transition: border-color 0.25s, background 0.2s;
+    text-decoration: none;
+  }
+
+  .listing__link:hover {
+    border-left-color: var(--color-green);
+    background: var(--color-surface-2);
+    text-decoration: none;
+  }
+
+  .listing__meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .listing__date,
+  .listing__time {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+  }
+
+  .listing__item-title {
+    /* Override global h2 scale for the list */
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1.2;
+    color: var(--color-text);
+    margin-bottom: 0.8rem;
+    font-style: normal;
+    max-width: 640px;
+  }
+
+  .listing__link:hover .listing__item-title {
+    color: var(--color-green);
+  }
+
+  .listing__excerpt {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    max-width: 60ch;
+    margin-bottom: 1.2rem;
+  }
+
+  .listing__read {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--color-green);
+    text-transform: uppercase;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+  }
+
+  .listing__link:hover .listing__read {
+    opacity: 1;
+  }
+
+  /* Footer */
+  .blog-footer {
+    background: var(--color-bg);
+    padding-block: 2rem;
+    border-top: 1px solid rgba(122, 184, 138, 0.08);
+  }
+
+  .blog-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .blog-footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-green);
+    letter-spacing: 0.02em;
+  }
+
+  .blog-footer__nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .blog-footer__nav a {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .blog-footer__nav a:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+</style>

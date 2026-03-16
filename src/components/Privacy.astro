@@ -3,18 +3,18 @@
 const points = [
   {
     icon: '◎',
-    title: 'Your key, your calls',
-    body: 'Devoke uses your own Anthropic API key. Requests go directly from your browser to Anthropic — no proxy, no middleman, no Devoke server ever sees your data.',
+    title: 'Post text, not profile data',
+    body: 'When Devoke rewrites a post, the text is sent to our server, processed by AI, and returned. We never log post content, build browsing profiles, or store what you read. Anthropic receives only the post text — no identity, no source URL, nothing about you.',
   },
   {
     icon: '◈',
-    title: 'Nothing is stored',
-    body: "Devoke keeps an in-memory cache to avoid re-processing posts you've already seen. It's wiped when you close the tab. Nothing is written to disk or sent anywhere.",
+    title: 'Your account is just an email',
+    body: "We store your email address and subscription status — nothing else. No browsing history, no list of posts you've rewritten, no behavioural data. Cancel any time. Account deleted on request.",
   },
   {
     icon: '◉',
     title: 'Original is always intact',
-    body: 'We only rewrite what\'s displayed. The original HTML is preserved in memory for the toggle — we never modify or delete the content a platform published.',
+    body: "We only rewrite what's displayed. The original is preserved in memory for the toggle — we never modify or delete the content a platform published. Closing the tab clears it completely.",
   },
 ];
 ---
@@ -24,8 +24,8 @@ const points = [
     <span class="section-label reveal">Privacy</span>
     <h2 class="priv__heading reveal">We don't want your data.</h2>
     <p class="priv__sub reveal">
-      Devoke is a client-side extension. There are no Devoke accounts, no Devoke servers,
-      and no analytics collecting your browsing habits.
+      Devoke uses a server to run rewrites — but that's all it touches. We don't log
+      the posts you read, track your browsing, or sell data. Here's exactly how it works.
     </p>
 
     <ul class="priv__grid reveal" role="list">

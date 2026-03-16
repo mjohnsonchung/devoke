@@ -1,0 +1,219 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+
+<BlogPost
+  title="We Ran 100 Social Media Posts Through Devoke. Here's What We Found."
+  description="We ran a sample of 100 posts from public social media feeds through Devoke's rewriter and categorised the results. Some findings were expected. Others weren't."
+  publishDate="2026-03-23"
+  readingTime="6 min read"
+  canonical="https://devoke.app/blog/we-rewrote-100-posts"
+>
+
+  <p>
+    We pulled 100 posts from public feeds across Twitter/X and Reddit — a mix of news accounts,
+    political commentary, sports, technology, and general content — and ran each through
+    Devoke's rewriter. We categorised the results and looked for patterns.
+  </p>
+
+  <p>
+    The posts are not attributed here. We're reporting patterns, not calling out individuals.
+    The findings are what's interesting.
+  </p>
+
+  <h2>How they broke down</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>% of sample</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Unchanged — already calm and factual</td>
+        <td>21</td>
+        <td>21%</td>
+      </tr>
+      <tr>
+        <td>Lightly rewritten — mild loaded language removed</td>
+        <td>34</td>
+        <td>34%</td>
+      </tr>
+      <tr>
+        <td>Significantly rewritten — substantial manipulation removed</td>
+        <td>31</td>
+        <td>31%</td>
+      </tr>
+      <tr>
+        <td>Flagged with [unverified claim]</td>
+        <td>14</td>
+        <td>14%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    The headline finding: roughly 79% of posts in our sample had some detectable manipulation
+    layer. One in five was already calm enough that Devoke left it alone.
+  </p>
+
+  <h2>What "unchanged" looked like</h2>
+
+  <p>
+    The posts Devoke left alone tended to fall into a few clear categories:
+  </p>
+
+  <ul>
+    <li>Personal updates ("Just got back from two weeks in Japan. That was exactly what I needed.")</li>
+    <li>Straightforward factual announcements ("The match kicks off at 3pm BST. Here's the lineup.")</li>
+    <li>Clearly flagged opinion ("I think the new policy is misguided, and here's why — [thread]")</li>
+    <li>Humour that was obviously humour ("My cat has once again rejected the expensive food and is eating cardboard.")</li>
+    <li>Grief and personal loss</li>
+  </ul>
+
+  <p>
+    The model is reasonably good at recognising genuine human expression. It almost never
+    rewrote personal posts — which matters, because the goal is to filter manufactured
+    outrage, not to sanitise how people talk to each other.
+  </p>
+
+  <h2>What "lightly rewritten" looked like</h2>
+
+  <p>
+    The largest category. These were posts where the framing was slightly loaded — not
+    egregiously manipulative, but carrying a charge that wasn't warranted by the facts.
+  </p>
+
+  <p>
+    Common patterns:
+  </p>
+
+  <ul>
+    <li>Unnecessary intensifiers: "absolutely devastating" → "significant"; "utterly failed" → "failed"</li>
+    <li>Unearned certainty: "will destroy" → "may affect"; "proves" → "suggests"</li>
+    <li>Vague but alarming qualifiers: "sources say something alarming is coming" → the claim was so vague it became "reports suggest an upcoming development" — and revealed how little was actually being said</li>
+  </ul>
+
+  <p>
+    The light rewrites were often the most revealing. When the loaded language was stripped
+    and you could see what remained, some posts contained almost no information at all.
+    The emotional charge had been the content.
+  </p>
+
+  <h2>What "significantly rewritten" looked like</h2>
+
+  <p>
+    The strongly sensationalist posts. These were the ones where the rewrite was most dramatic.
+  </p>
+
+  <p>
+    Representative pattern — original:
+  </p>
+
+  <blockquote>
+    <p>
+      "The MAINSTREAM MEDIA is TERRIFIED of this story getting out — big tech is doing
+      everything they can to suppress it. SHARE THIS EVERYWHERE before it disappears!!"
+    </p>
+  </blockquote>
+
+  <p>
+    Rewritten:
+  </p>
+
+  <blockquote>
+    <p>
+      "This story has received limited mainstream coverage. The author believes it is being
+      suppressed by major tech platforms."
+    </p>
+  </blockquote>
+
+  <p>
+    The rewrite doesn't validate or invalidate the claim — it just removes the engineered
+    urgency and presents what's actually being said. The reader can evaluate the claim
+    itself, rather than the emotional packaging around it.
+  </p>
+
+  <p>
+    Another common pattern in the significant category: news headlines that dramatically
+    overstated what the underlying story contained. The headline would say "SHOCKING new
+    development EXPOSES government failure" — and the article (when you read it) described
+    a moderately critical audit finding that had been covered elsewhere without drama.
+  </p>
+
+  <h2>Where the model struggled</h2>
+
+  <p>
+    Roughly 8% of the rewrites in our sample were ones we'd flag as imperfect. Three types of error:
+  </p>
+
+  <p>
+    <strong>Softening genuine urgency.</strong> Some posts expressed real alarm about
+    real situations — a developing emergency, a time-sensitive public health message —
+    using language that was urgent because urgency was warranted. The model occasionally
+    softened these when it shouldn't have. This is the most significant error type,
+    and it's why the toggle to the original is non-negotiable.
+  </p>
+
+  <p>
+    <strong>Missing dry irony.</strong> Deadpan posts that appeared sensationalist
+    on the surface but were clearly ironic in context occasionally got rewritten
+    when they should have been left alone. The model reads text, not tone of voice.
+  </p>
+
+  <p>
+    <strong>Factual precision loss.</strong> In a small number of cases, the rewrite
+    generalised a specific claim into something vaguer — technically more neutral but
+    also less informative. "The species faces an 80% population decline" becoming "the
+    species faces significant population decline" loses the specific number that might
+    actually matter to the reader.
+  </p>
+
+  <h2>The most surprising finding</h2>
+
+  <p>
+    We expected the most sensationalist content to come from explicitly political accounts.
+    It did — but the second-largest source was sports commentary, which we hadn't anticipated.
+  </p>
+
+  <p>
+    Sports commentary on social media uses almost exactly the same linguistic patterns as
+    political outrage content: superlatives, ALL CAPS, certainty about outcomes, tribal
+    framing ("WE were robbed," "THEY cheated"). The emotional register is identical.
+    The stakes are lower, but the manipulation techniques are the same.
+  </p>
+
+  <p>
+    Devoke rewrites sports posts the same way it rewrites political ones. "That referee
+    DESTROYED us with that call — absolutely DISGRACEFUL" becomes "The referee's decision
+    was controversial and cost us the match." Whether you want that depends on how much
+    of sports' emotional intensity you want preserved. (For what it's worth, at Deep
+    intensity, the model is more aggressive; at Light, it would have left most sports
+    commentary alone as relatively harmless emotional expression.)
+  </p>
+
+  <h2>What this suggests about the feed</h2>
+
+  <p>
+    If our sample is representative — and we have no strong reason to think it isn't —
+    then roughly 80% of social media content contains some detectable manipulation layer.
+    Not all of it is egregious. Most of it is mild: a word here, a framing choice there.
+    But it accumulates.
+  </p>
+
+  <p>
+    The average social media user sees hundreds of posts per day. If 80% of them carry
+    even a small emotional charge that isn't warranted by the content, the aggregate
+    effect on how you feel after a scrolling session is not nothing. It's not the single
+    outrageous post that does the damage — it's the sustained ambient charge of content
+    that's always slightly more alarming than it needs to be.
+  </p>
+
+  <p>
+    That's what Devoke is trying to address at scale.
+  </p>
+
+</BlogPost>

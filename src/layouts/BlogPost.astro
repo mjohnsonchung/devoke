@@ -1,0 +1,382 @@
+---
+// BlogPost — layout for individual blog articles.
+// Extends Base.astro with article-specific JSON-LD and reading-focused typography.
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: string;       // ISO 8601 — e.g. "2026-03-16"
+  readingTime: string;       // e.g. "7 min read"
+  canonical?: string;
+}
+
+const {
+  title,
+  description,
+  publishDate,
+  readingTime,
+  canonical = Astro.url.href,
+} = Astro.props;
+
+const displayDate = new Date(publishDate).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: description,
+  datePublished: publishDate,
+  url: canonical,
+  author: {
+    '@type': 'Organization',
+    name: 'Devoke',
+    url: 'https://devoke.app',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Devoke',
+    url: 'https://devoke.app',
+  },
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  schema={schema}
+>
+  <div class="blog-wrap">
+
+    <!-- Minimal site header -->
+    <header class="blog-header">
+      <div class="container blog-header__inner">
+        <a href="/" class="blog-header__brand" aria-label="Devoke home">◎ Devoke</a>
+        <a href="/blog" class="blog-header__back">← All articles</a>
+      </div>
+    </header>
+
+    <!-- Article -->
+    <main>
+      <article class="post">
+        <div class="container">
+
+          <!-- Article header -->
+          <header class="post__header reveal">
+            <span class="section-label">Essay</span>
+            <h1 class="post__title">{title}</h1>
+            <p class="post__meta">
+              <time datetime={publishDate}>{displayDate}</time>
+              <span class="post__meta-sep" aria-hidden="true">·</span>
+              <span>{readingTime}</span>
+            </p>
+          </header>
+
+          <!-- Article body — slot receives the article content -->
+          <div class="post__body reveal">
+            <slot />
+          </div>
+
+          <!-- Bottom CTA — earned, not forced -->
+          <aside class="post__cta reveal" aria-label="Try Devoke">
+            <div class="post__cta-inner">
+              <span class="section-label">Try it</span>
+              <p class="post__cta-text">
+                Devoke rewrites sensationalist posts in real time — on X, Reddit,
+                news sites, and Google Search. Every rewrite has a one-tap toggle
+                to see the original.
+              </p>
+              <a href="/signup" class="btn btn-primary">
+                Start free trial — 7 days free
+              </a>
+            </div>
+          </aside>
+
+        </div>
+      </article>
+    </main>
+
+    <!-- Minimal footer -->
+    <footer class="blog-footer">
+      <div class="container blog-footer__inner">
+        <span class="blog-footer__brand">◎ Devoke</span>
+        <nav class="blog-footer__nav" aria-label="Footer navigation">
+          <a href="/blog">Blog</a>
+          <a href="/privacy">Privacy policy</a>
+        </nav>
+      </div>
+    </footer>
+
+  </div>
+</Base>
+
+<style>
+  /* ── Site header ─────────────────────────────────────────── */
+  .blog-header {
+    background: var(--color-bg);
+    border-bottom: 1px solid rgba(122, 184, 138, 0.08);
+    padding-block: 1.1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .blog-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .blog-header__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-green);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+
+  .blog-header__brand:hover { text-decoration: none; opacity: 0.8; }
+
+  .blog-header__back {
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .blog-header__back:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  /* ── Article chrome ──────────────────────────────────────── */
+  .post {
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+
+  .post__header {
+    max-width: 740px;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .post__title {
+    /* Override global h1 scale — articles need a tighter, editorial size */
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 1.1;
+    margin-top: 0.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+  }
+
+  .post__meta {
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    letter-spacing: 0.03em;
+  }
+
+  .post__meta-sep { opacity: 0.4; }
+
+  /* ── Article body prose ──────────────────────────────────── */
+  .post__body {
+    max-width: 680px;
+  }
+
+  /* All direct children of post__body get prose spacing */
+  .post__body :global(p) {
+    font-family: var(--font-ui);
+    font-size: clamp(1rem, 1.5vw, 1.08rem);
+    line-height: 1.8;
+    color: var(--color-text);
+    margin-bottom: 1.6em;
+    max-width: 100%;
+  }
+
+  .post__body :global(h2) {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+
+  .post__body :global(h3) {
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    margin-top: 2.4rem;
+    margin-bottom: 0.8rem;
+    color: var(--color-text);
+  }
+
+  /* Pull quotes / highlighted callouts */
+  .post__body :global(blockquote) {
+    border-left: 2px solid var(--color-green);
+    padding: 0.8rem 1.4rem;
+    margin: 2rem 0;
+    background: var(--color-surface);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  .post__body :global(blockquote p) {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+    font-style: italic;
+    color: var(--color-text);
+    margin-bottom: 0;
+    opacity: 0.9;
+  }
+
+  /* Comparison tables */
+  .post__body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+  }
+
+  .post__body :global(th) {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-green);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(122, 184, 138, 0.2);
+    text-align: left;
+  }
+
+  .post__body :global(td) {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(122, 184, 138, 0.08);
+    color: var(--color-muted);
+    line-height: 1.5;
+    max-width: none;
+    vertical-align: top;
+  }
+
+  .post__body :global(td:first-child) {
+    color: rgba(184, 212, 190, 0.65);
+    font-size: 0.88rem;
+  }
+
+  .post__body :global(tr:last-child td) {
+    border-bottom: none;
+  }
+
+  .post__body :global(ul),
+  .post__body :global(ol) {
+    padding-left: 1.4rem;
+    margin-bottom: 1.6em;
+    color: var(--color-muted);
+    font-size: clamp(1rem, 1.5vw, 1.08rem);
+    line-height: 1.75;
+  }
+
+  .post__body :global(li) {
+    margin-bottom: 0.5em;
+    max-width: 100%;
+  }
+
+  .post__body :global(a) {
+    color: var(--color-green);
+    text-decoration: underline;
+    text-decoration-color: rgba(122, 184, 138, 0.35);
+    text-underline-offset: 3px;
+  }
+
+  .post__body :global(a:hover) {
+    text-decoration-color: var(--color-green);
+  }
+
+  .post__body :global(strong) {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .post__body :global(em) {
+    font-style: italic;
+    color: var(--color-text);
+  }
+
+  /* Source/citation line */
+  .post__body :global(.cite) {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    opacity: 0.65;
+    margin-top: -1rem;
+    margin-bottom: 1.6em;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* ── Bottom CTA ──────────────────────────────────────────── */
+  .post__cta {
+    margin-top: clamp(4rem, 8vw, 6rem);
+    padding-top: clamp(3rem, 6vw, 4.5rem);
+    border-top: 1px solid rgba(122, 184, 138, 0.12);
+    max-width: 680px;
+  }
+
+  .post__cta-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .post__cta-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    max-width: 52ch;
+  }
+
+  /* ── Footer ──────────────────────────────────────────────── */
+  .blog-footer {
+    background: var(--color-bg);
+    padding-block: 2rem;
+    border-top: 1px solid rgba(122, 184, 138, 0.08);
+  }
+
+  .blog-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .blog-footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-green);
+    letter-spacing: 0.02em;
+  }
+
+  .blog-footer__nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .blog-footer__nav a {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .blog-footer__nav a:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+</style>
